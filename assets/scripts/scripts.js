@@ -1,65 +1,100 @@
 let timeEl = document.getElementById("time");
-let timeLeft = 90;
+let mainEl = document.querySelector(".container")
 
-let questtion1 = {
-  question: "Which of the following is NOT a data type?",
-  option1: "Boolean",
-  option2: "String",
-  option3: "Array",
-  correctAnswer: "Variable"
+let timeLeft = 0;
+let timerInterval;
+
+let questions = [
+  {
+    question: "Which of the following is NOT a data type?",
+    answers: ["Boolean", "String", "Array", "Variable"],
+    correctAnswer: "Variable"
+  },
+  {
+    question: "Question 2?",
+    answers: ["Option 2-1", "Option 2-2", "Option 2-3", "Correct Answer 2"],
+    correctAnswer: "Correct Answer 2"
+  },
+  {
+    question: "Question 3?",
+    answers: ["Option 3-1", "Option 3-2", "Option 3-3", "Correct Answer 3"],
+    correctAnswer: "Correct Answer 3"
+  },
+  {
+    question: "Question 4?",
+    answers: ["Option 4-1", "Option 4-2", "Option 4-3", "Correct Answer 4"],
+    correctAnswer: "Correct Answer 4"
+  },
+  {
+    question: "Question 5?",
+    answers: ["Option 5-1", "Option 5-2", "Option 5-3", "Correct Answer 5"],
+    correctAnswer: "Correct Answer 5"
+  }
+];
+
+timeEl.textContent = "Total: " + timeLeft;
+
+init();
+
+function init() {
+  let h1Title = document.createElement("h1");
+  h1Title.textContent = "Timed Coding Quiz";
+  mainEl.appendChild(h1Title);
+  
+  let pInstructions = document.createElement("p");
+  pInstructions.textContent = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds.";
+  mainEl.appendChild(pInstructions);
+
+  let startButton = document.createElement("button");
+  startButton.textContent = "Start Quiz";
+  mainEl.appendChild(startButton);
 }
 
-let questtion2 = {
-  question: "Question 2?",
-  option1: "Option 1",
-  option2: "Option 2",
-  option3: "Option 3",
-  correctAnswer: "Correct Answer"
+let startButton = document.querySelector("button");
+
+function startQuiz() {
+  // mainEl.children.style.display = "none";
+  setTime();
+  setupQuestion();
 }
 
-let questtion3 = {
-  question: "Question 3?",
-  option1: "Option 1",
-  option2: "Option 2",
-  option3: "Option 3",
-  correctAnswer: "Correct Answer"
-}
-
-let questtion4 = {
-  question: "Question 4?",
-  option1: "Option 1",
-  option2: "Option 2",
-  option3: "Option 3",
-  correctAnswer: "Correct Answer"
-}
-
-let questtion5 = {
-  question: "Question 5?",
-  option1: "Option 1",
-  option2: "Option 2",
-  option3: "Option 3",
-  correctAnswer: "Correct Answer"
-}
-
-// setTime ();
+startButton.addEventListener("click", startQuiz);
 
 function setTime() {
-  // Sets interval in variable
-  var timerInterval = setInterval(function() {
-    timeLeft--;
+  timeLeft = 60;
+  timerInterval = setInterval(function() {
     timeEl.textContent = "Total: " + timeLeft;
+    timeLeft--;
 
     if(timeLeft === 0) {
-      // Stops execution of action at set interval
       clearInterval(timerInterval);
-      // Calls function to create and append image
       allDone();
     }
 
   }, 1000);
 }
 
-// Function to display all done
+
+
+function setupQuestion() {
+  var i = 0;
+  for (i; i < questions.length; i++) {
+    let questionEl = document.createElement("h2");
+    questionEl.textContent = questions[i].question;
+    mainEl.appendChild(questionEl);
+
+    let optionList = document.createElement("ol");
+    mainEl.appendChild(optionList);
+
+    var x = 0;
+    for (x; x < questions[i].answers.length; x++) {
+      let option = document.createElement("li");
+      option.textContent = questions[i].answers[x];
+      optionList.appendChild(option);
+    }
+  }
+}
+
 function allDone() {
   timeEl.textContent = " ";
 }
