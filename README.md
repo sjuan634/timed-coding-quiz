@@ -29,4 +29,5 @@ THEN I can save my initials and score
 
 
 ## Usage
+[Timed Coding Quiz](https://sjuan634.github.io/timed-coding-quiz/)
 ![Timed Quiz Demo](./images/timed-quiz_demo.gif)
