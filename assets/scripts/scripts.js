@@ -1,100 +1,177 @@
-let timeEl = document.getElementById("time");
-let mainEl = document.querySelector(".container")
-
-let timeLeft = 0;
-let timerInterval;
-
-let questions = [
+const questions = [
   {
-    question: "Which of the following is NOT a data type?",
-    answers: ["Boolean", "String", "Array", "Variable"],
-    correctAnswer: "Variable"
+    question: 'Which of the following is NOT a data type?',
+    choices: ['boolean', 'string', 'array', 'variable'],
+    answer: 'variable',
   },
   {
-    question: "Question 2?",
-    answers: ["Option 2-1", "Option 2-2", "Option 2-3", "Correct Answer 2"],
-    correctAnswer: "Correct Answer 2"
+    question: 'What is the correct syntax for a for loop in JavaScript?',
+    choices: ['for (i < 5; i++;)', 'for (i = 0; i < 5; i++)', 'for (i = 0; i++; i < 5)', 'for (i++; i < 5; i = 0)'],
+    answer: 'for (i = 0; i < 5; i++)',
   },
   {
-    question: "Question 3?",
-    answers: ["Option 3-1", "Option 3-2", "Option 3-3", "Correct Answer 3"],
-    correctAnswer: "Correct Answer 3"
+    question: 'What is the purpose of the "return" statement in a JavaScript function?',
+    choices: [' to declare a variable', 'to stop the execution of a function and return a value', 'to start the execution of a function', 'to perform a comparison'],
+    answer: 'to stop the execution of a function and return a value',
   },
   {
-    question: "Question 4?",
-    answers: ["Option 4-1", "Option 4-2", "Option 4-3", "Correct Answer 4"],
-    correctAnswer: "Correct Answer 4"
+    question: 'What is the difference between "let" and "const" in JavaScript?',
+    choices: ['"let" is used to declare constants, while "const" is used to declare variables.', '"let" is block-scoped, while "const" is function-scoped.', '"let" can be reassigned, while "const" cannot be reassigned.', '"let" is used for primitive types, while "const" is used for complex types.'],
+    answer: '"let" can be reassigned, while "const" cannot be reassigned.',
   },
   {
-    question: "Question 5?",
-    answers: ["Option 5-1", "Option 5-2", "Option 5-3", "Correct Answer 5"],
-    correctAnswer: "Correct Answer 5"
+    question: 'What is the difference between "==" and "===" operators in JavaScript?',
+    choices: ['"==" performs type coercion, while "===" does not.', '"===" performs type coercion, while "==" does not.', '"==" is used for assignment, while "===" is used for comparison.', 'There is no difference between "==" and "===" in JavaScript.'],
+    answer: '"==" performs type coercion, while "===" does not.',
   }
 ];
 
-timeEl.textContent = "Total: " + timeLeft;
+const startBtn = document.querySelector('#start-btn');
+const startDiv = document.querySelector('#start-quiz');
+const questionsDiv = document.querySelector('#questions');
+const endDiv = document.querySelector('#end');
+const feedbackDiv = document.querySelector('#feedback');
+const choicesDiv = document.querySelector('#choices');
+const submitBtn = document.querySelector('#submit');
+const initialsEl = document.querySelector('#initials');
+const timeEl = document.querySelector('#time');
+const scoreEl = document.querySelector('#score');
+const olEl = document.querySelector('#highscores');
+const clearBtn = document.querySelector('#clear');
+const viewHighscores = document.querySelector('#view-scores');
+const scoresModal = document.querySelector('#scores-modal');
 
-init();
+let questionIndex = 0;
+let time = questions.length * 15;
+let timer;
 
-function init() {
-  let h1Title = document.createElement("h1");
-  h1Title.textContent = "Timed Coding Quiz";
-  mainEl.appendChild(h1Title);
-  
-  let pInstructions = document.createElement("p");
-  pInstructions.textContent = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds.";
-  mainEl.appendChild(pInstructions);
+function clockTick() {
+  time--;
+  timeEl.textContent = time;
 
-  let startButton = document.createElement("button");
-  startButton.textContent = "Start Quiz";
-  mainEl.appendChild(startButton);
-}
-
-let startButton = document.querySelector("button");
-
-function startQuiz() {
-  // mainEl.children.style.display = "none";
-  setTime();
-  setupQuestion();
-}
-
-startButton.addEventListener("click", startQuiz);
-
-function setTime() {
-  timeLeft = 60;
-  timerInterval = setInterval(function() {
-    timeEl.textContent = "Total: " + timeLeft;
-    timeLeft--;
-
-    if(timeLeft === 0) {
-      clearInterval(timerInterval);
-      allDone();
-    }
-
-  }, 1000);
-}
-
-
-
-function setupQuestion() {
-  var i = 0;
-  for (i; i < questions.length; i++) {
-    let questionEl = document.createElement("h2");
-    questionEl.textContent = questions[i].question;
-    mainEl.appendChild(questionEl);
-
-    let optionList = document.createElement("ol");
-    mainEl.appendChild(optionList);
-
-    var x = 0;
-    for (x; x < questions[i].answers.length; x++) {
-      let option = document.createElement("li");
-      option.textContent = questions[i].answers[x];
-      optionList.appendChild(option);
-    }
+  if (time <= 0) {
+    quizEnd();
   }
 }
 
-function allDone() {
-  timeEl.textContent = " ";
+function startQuiz() {
+  startDiv.classList.add('hidden');
+
+  questionsDiv.classList.remove('hidden');
+
+  timer = setInterval(clockTick, 1000);
+
+  timeEl.textContent = time;
+
+  renderQuestion();
+};
+
+function renderQuestion() {
+  let question = questions[questionIndex];
+
+  const questionEl = document.querySelector('#question');
+  questionEl.textContent = question.question;
+
+  choicesDiv.innerHTML = '';
+
+  for (let i = 0; i < question.choices.length; i++) {
+    let choice = question.choices[i];
+    const choiceEl = document.createElement('button');
+    choiceEl.setAttribute('class', 'block my-2 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2');
+    choiceEl.setAttribute('value', choice);
+
+    choiceEl.textContent = `${i + 1}. ${choice}`;
+
+    choicesDiv.appendChild(choiceEl);
+  };
+};
+
+function checkAnswer(e) {
+  const answerSelected = e.target;
+
+  if (answerSelected.value !== questions[questionIndex].answer) {
+    time -= 15;
+
+    if(time < 0) {
+      time = 0
+    };
+
+    timeEl.textContent = time;
+
+    feedbackDiv.textContent = 'Incorrect!';
+  } else {
+    feedbackDiv.textContent = 'Correct!';
+  };
+
+  feedbackDiv.classList.remove('hidden');
+  setTimeout(function () {
+    feedbackDiv.classList.add('hidden');
+  }, 1000);
+
+  questionIndex++;
+
+  if (questionIndex === questions.length) {
+    endQuiz();
+  } else {
+    renderQuestion();
+  };
+};
+
+function endQuiz() {
+
+  clearInterval(timer);
+
+  questionsDiv.classList.add('hidden');
+  endDiv.classList.remove('hidden');
+  scoreEl.textContent = time;
+};
+
+function logScore(e) {
+
+  const initials = initialsEl.value.trim();
+
+  if (initials !== '') {
+    const highscores = JSON.parse(window.localStorage.getItem('highscores')) || [];
+
+    const newScore = {
+      score: time,
+      initials: initials,
+    };
+
+    highscores.push(newScore);
+    window.localStorage.setItem('highscores', JSON.stringify(highscores));
+
+    printHighscores();
+
+    scoresModal.classList.remove('hidden');
+  };
+};
+
+function printHighscores() {
+  let highscores = JSON.parse(window.localStorage.getItem('highscores')) || [];
+
+  highscores.sort(function (a, b) {
+    return b.score - a.score;
+  });
+
+  for (let i = 0; i < highscores.length; i += 1) {
+    const liEl = document.createElement('li');
+    liEl.textContent = `${highscores[i].initials} - ${highscores[i].score}`;
+
+    olEl.appendChild(liEl);
+  }
 }
+
+function clearHighscores() {
+  window.localStorage.removeItem('highscores');
+  window.location.reload();
+}
+
+startBtn.addEventListener('click', startQuiz);
+choicesDiv.addEventListener('click', checkAnswer);
+submitBtn.addEventListener('click', logScore);
+viewHighscores.addEventListener('click', () => {
+  printHighscores();
+  scoresModal.classList.remove('hidden');
+})
+clearBtn.addEventListener('click', clearHighscores);
